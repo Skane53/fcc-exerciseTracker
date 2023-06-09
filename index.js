@@ -17,6 +17,12 @@ app.get("/", (req, res) => {
   res.sendFile(__dirname + "/views/index.html");
 });
 
+app.get("/api/users", (req, res) => {
+  ExerciseTracker.find({}, { _id: 1, username: 1, __v: 1 }).then((data) =>
+    res.send(data)
+  );
+});
+
 app.post("/api/users", (req, res) => {
   const username = req.body.username;
   const newExerciseTracker = new ExerciseTracker({
