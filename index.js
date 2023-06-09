@@ -18,9 +18,9 @@ app.get("/", (req, res) => {
 });
 
 app.get("/api/users", (req, res) => {
-  ExerciseTracker.find({}, { _id: 1, username: 1, __v: 1 }).then((data) =>
-    res.send(data[0])
-  );
+  ExerciseTracker.aggregate([
+    { $project: { _id: 1, username: 1, __v: 1 } },
+  ]).then((data) => res.send(data));
 });
 
 app.post("/api/users", (req, res) => {
