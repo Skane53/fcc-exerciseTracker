@@ -19,7 +19,7 @@ app.get("/", (req, res) => {
 
 app.get("/api/users", (req, res) => {
   ExerciseTracker.find({}, { _id: 1, username: 1, __v: 1 }).then((data) =>
-    res.send(data)
+    res.send(data[0])
   );
 });
 
@@ -61,14 +61,18 @@ app.post("/api/users/:_id/exercises", (req, res) => {
     res.send("this _id is not in the database");
   });
 
-  ExerciseTracker.findOne({ _id: _id }).then((data) => {
-    res.send({
-      _id: data["_id"],
-      username: data["username"],
-      date,
-      duration,
+  ExerciseTracker.aggregate([
+    { $match: { _id: new ObjectId(req.params._id) } },
+  ]).then((data) => {
+    //Append the added execise before returning
+    let dataToreturn = [...data];
+    dataToreturn[0]["log"].push({
       description,
+      duration: Number(duration),
+      date,
     });
+    data[0]["count"] += 1;
+    res.send(dataToreturn[0]);
   });
 });
 
