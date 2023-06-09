@@ -38,43 +38,46 @@ app.post("/api/users", (req, res) => {
   });
 });
 
-app.post("/api/users/:_id/exercises", (req, res) => {
-  const _id = req.params._id;
-  const description = req.body.description;
-  const duration = req.body.duration;
-  let date = req.body.date;
+app.post(
+  "/api/users/:_id/exercises",
+  (req, res, next) => {
+    const _id = req.params._id;
+    const description = req.body.description;
+    const duration = req.body.duration;
+    let date = req.body.date;
 
-  if (date === "") {
-    date = new Date();
-  } else if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-    date = new Date(req.body.date);
-  } else {
-    return res.send({ date: "format is invalid" });
-  }
+    if (date === "") {
+      date = new Date();
+    } else if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      date = new Date(req.body.date);
+    } else {
+      return res.send({ date: "format is invalid" });
+    }
 
-  date = date.toDateString();
+    date = date.toDateString();
 
-  ExerciseTracker.updateOne(
-    { _id: _id },
-    { $push: { log: { description, duration, date } }, $inc: { count: 1 } }
-  ).catch((err) => {
-    res.send("this _id is not in the database");
-  });
-
-  ExerciseTracker.aggregate([
-    { $match: { _id: new ObjectId(req.params._id) } },
-  ]).then((data) => {
-    //Append the added execise before returning
-    let dataToreturn = [...data];
-    dataToreturn[0]["log"].push({
-      description,
-      duration: Number(duration),
-      date,
+    ExerciseTracker.updateOne(
+      { _id: _id },
+      { $push: { log: { description, duration, date } }, $inc: { count: 1 } }
+    ).catch((err) => {
+      res.send("this _id is not in the database");
     });
-    data[0]["count"] += 1;
-    res.send(dataToreturn[0]);
-  });
-});
+    next();
+  },
+  (req, res) => {
+    ExerciseTracker.find({ _id: new ObjectId(req.params._id) }).then((data) => {
+      //Append the added execise before returning
+      /* let dataToreturn = [...data];
+      dataToreturn[0]["log"].push({
+        description,
+        duration: Number(duration),
+        date,
+      });
+      data[0]["count"] += 1; */
+      res.send(data[0]);
+    });
+  }
+);
 
 app.get("/api/users/:_id/logs", (req, res) => {
   const _id = req.params._id;
