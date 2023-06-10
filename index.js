@@ -62,7 +62,15 @@ app.post("/api/users/:_id/exercises", (req, res, next) => {
     },
     { returnDocument: "after" }
   )
-    .then((data) => res.json(data))
+    .then((data) =>
+      res.json({
+        _id: data["_id"],
+        usename: data["username"],
+        date: data["log"][data["count"] - 1]["date"],
+        duration: data["log"][data["count"] - 1]["duration"],
+        description: data["log"][data["count"] - 1]["description"],
+      })
+    )
     .catch((err) => {
       res.send("this _id is not in the database");
     });
