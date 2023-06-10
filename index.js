@@ -65,7 +65,7 @@ app.post(
     next();
   },
   (req, res) => {
-    ExerciseTracker.find({ _id: new ObjectId(req.params._id) }).then((data) => {
+    ExerciseTracker.find({ _id: req.params._id }).then((data) => {
       //Append the added execise before returning
       /* let dataToreturn = [...data];
       dataToreturn[0]["log"].push({
