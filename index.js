@@ -70,8 +70,8 @@ app.post(
   },
   (req, res) => {
     ExerciseTracker.find({ _id: req.params._id }).then((data) => {
-      //console.log(data);
       if (data.length == 0) return res.send("this _id is not in the database");
+      res.send(data[0]);
     });
   }
 );
