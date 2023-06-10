@@ -65,7 +65,7 @@ app.post("/api/users/:_id/exercises", (req, res, next) => {
     .then((data) =>
       res.send({
         _id: data["_id"],
-        usename: data["username"],
+        username: data["username"],
         date: data["log"][data["count"] - 1]["date"],
         duration: data["log"][data["count"] - 1]["duration"],
         description: data["log"][data["count"] - 1]["description"],
