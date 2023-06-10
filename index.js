@@ -63,7 +63,7 @@ app.post("/api/users/:_id/exercises", (req, res, next) => {
     { returnDocument: "after" }
   )
     .then((data) =>
-      res.json({
+      res.send({
         _id: data["_id"],
         usename: data["username"],
         date: data["log"][data["count"] - 1]["date"],
