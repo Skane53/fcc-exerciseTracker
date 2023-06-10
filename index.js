@@ -82,37 +82,45 @@ app.get("/api/users/:_id/logs", (req, res) => {
   const to = new Date(req.query.to).getTime() || Infinity;
   const limit = req.query.limit;
 
-  ExerciseTracker.aggregate([{ $match: { _id: new ObjectId(_id) } }]).then(
-    (data) => {
-      if (data.length == 0) return res.send("this _id is not in the database");
+  ExerciseTracker.aggregate([
+    { $match: { _id: new ObjectId(_id) } },
+    {
+      $project: {
+        _id: 1,
+        username: 1,
+        count: 1,
+        log: { description: 1, duration: 1, date: 1 },
+      },
+    },
+  ]).then((data) => {
+    if (data.length == 0) return res.send("this _id is not in the database");
+    // Filtering the dates between "FROM" and "ToO"
+    let logToReturn = data[0]["log"].filter((i) => {
+      const dateRef = new Date(i["date"]).getTime();
+      return dateRef > from && dateRef < to;
+    });
 
-      // Filtering the dates between "FROM" and "ToO"
-      let logToReturn = data[0]["log"].filter((i) => {
-        const dateRef = new Date(i["date"]).getTime();
-        return dateRef > from && dateRef < to;
-      });
+    //Mapping to return objects on format {description, duration, date}
+    /*  logToReturn = logToReturn.map((i) => {
+      return {
+        description: i["description"],
+        duration: i["duration"],
+        date: i["date"],
+      };
+    }); */
 
-      //Mapping to return objects on format {description, duration, date}
-      logToReturn = logToReturn.map((i) => {
-        return {
-          description: i["description"],
-          duration: i["duration"],
-          date: i["date"],
-        };
-      });
+    //Slicing to get the limit Number of Logs
+    const newCount = limit || data[0]["count"];
+    logToReturn = logToReturn.slice(0, newCount);
 
-      //Slicing to get the limit Number of Logs
-      const newCount = limit || data[0]["count"];
-      logToReturn = logToReturn.slice(0, newCount);
+    dataToReturn = [...data];
+    console.log(dataToReturn);
+    dataToReturn[0]["log"] = logToReturn;
+    dataToReturn[0]["count"] = logToReturn.length;
+    delete dataToReturn[0]["__v"];
 
-      dataToReturn = [...data];
-      dataToReturn[0]["log"] = logToReturn;
-      dataToReturn[0]["count"] = logToReturn.length;
-      delete dataToReturn[0]["__v"];
-
-      res.send(dataToReturn[0]);
-    }
-  );
+    res.send(dataToReturn[0]);
+  });
 });
 
 const listener = app.listen(process.env.PORT || 3000, () => {
