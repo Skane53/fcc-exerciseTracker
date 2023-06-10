@@ -5,7 +5,7 @@ require("dotenv").config();
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const ExerciseTracker = require("./exerciseTrackerModel");
-const { ObjectId } = require("mongodb");
+const { ObjectId, ReturnDocument } = require("mongodb");
 
 app.use(cors());
 app.use(express.static("public"));
@@ -58,7 +58,11 @@ app.post(
 
     ExerciseTracker.updateOne(
       { _id: _id },
-      { $push: { log: { description, duration, date } }, $inc: { count: 1 } }
+      {
+        $push: { log: { description, duration, date } },
+        $inc: { count: 1 },
+        returnNewDocument: true,
+      }
     ).catch((err) => {
       res.send("this _id is not in the database");
     });
@@ -66,15 +70,8 @@ app.post(
   },
   (req, res) => {
     ExerciseTracker.find({ _id: req.params._id }).then((data) => {
-      //Append the added execise before returning
-      /* let dataToreturn = [...data];
-      dataToreturn[0]["log"].push({
-        description,
-        duration: Number(duration),
-        date,
-      });
-      data[0]["count"] += 1; */
-      res.send(data[0]);
+      //console.log(data);
+      if (data.length == 0) return res.send("this _id is not in the database");
     });
   }
 );
@@ -88,6 +85,8 @@ app.get("/api/users/:_id/logs", (req, res) => {
   ExerciseTracker.aggregate([
     { $match: { _id: new ObjectId(req.params._id) } },
   ]).then((data) => {
+    if (data.length == 0) return res.send("this _id is not in the database");
+
     // Filtering the dates between "FROM" and "ToO"
     let logToReturn = data[0]["log"].filter((i) => {
       const dateRef = new Date(i["date"]).getTime();
