@@ -62,7 +62,7 @@ app.post("/api/users/:_id/exercises", (req, res, next) => {
     },
     { returnDocument: "after" }
   )
-    .then((data) => res.send(data))
+    .then((data) => res.json(data))
     .catch((err) => {
       res.send("this _id is not in the database");
     });
