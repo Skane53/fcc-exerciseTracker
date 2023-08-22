@@ -86,10 +86,10 @@ app.get("/api/users/:_id/logs", (req, res) => {
     { $match: { _id: new ObjectId(_id) } },
     {
       $project: {
-        _id: 1,
         username: 1,
         count: 1,
-        log: 1,
+        _id: 1,
+        log: { description: 1, duration: 1, date: 1 },
       },
     },
   ]).then((data) => {
@@ -114,7 +114,7 @@ app.get("/api/users/:_id/logs", (req, res) => {
     logToReturn = logToReturn.slice(0, newCount);
 
     let dataToReturn = [...data];
-    console.log(dataToReturn[0].log);
+    console.log(dataToReturn[0]);
     dataToReturn[0]["log"] = logToReturn;
     dataToReturn[0]["count"] = logToReturn.length;
     delete dataToReturn[0]["__v"];

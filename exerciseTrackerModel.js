@@ -7,7 +7,7 @@ const exerciseTrackerSchema = {
     {
       description: { type: String, required: true },
       duration: { type: Number, required: true },
-      date: String,
+      date: { type: String },
     },
   ],
 };
