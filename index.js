@@ -113,7 +113,7 @@ app.get("/api/users/:_id/logs", (req, res) => {
     const newCount = limit || data[0]["count"];
     logToReturn = logToReturn.slice(0, newCount);
 
-    dataToReturn = [...data];
+    let dataToReturn = [...data];
     console.log(dataToReturn);
     dataToReturn[0]["log"] = logToReturn;
     dataToReturn[0]["count"] = logToReturn.length;
