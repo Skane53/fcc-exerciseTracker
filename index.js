@@ -27,8 +27,8 @@ app.post("/api/users", (req, res) => {
   const username = req.body.username;
   const newExerciseTracker = new ExerciseTracker({
     username,
-    count,
-    log,
+    count: 0,
+    log: [],
   });
   newExerciseTracker.save();
 
