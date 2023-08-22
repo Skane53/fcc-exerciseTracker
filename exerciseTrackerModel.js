@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const exerciseTrackerSchema = {
   username: { type: String, required: true },
-  count: { type: Number },
+  count: { type: Number, required: true },
   log: [
     {
       description: { type: String, required: true },
