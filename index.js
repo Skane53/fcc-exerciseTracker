@@ -119,7 +119,7 @@ app.get("/api/users/:_id/logs", (req, res) => {
     dataToReturn[0]["count"] = logToReturn.length;
     delete dataToReturn[0]["__v"];
 
-    res.send(dataToReturn[0]);
+    res.json(dataToReturn[0]);
   });
 });
 
