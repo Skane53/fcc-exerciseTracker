@@ -82,17 +82,7 @@ app.get("/api/users/:_id/logs", (req, res) => {
   const to = new Date(req.query.to).getTime() || Infinity;
   const limit = req.query.limit;
 
-  ExerciseTracker.aggregate([
-    { $match: { _id: new ObjectId(_id) } },
-    {
-      $project: {
-        username: 1,
-        count: 1,
-        _id: 1,
-        log: { description: 1, duration: 1, date: 1 },
-      },
-    },
-  ]).then((data) => {
+  ExerciseTracker.find({ _id: _id }).then((data) => {
     console.log(data);
     res.json(data);
   });
