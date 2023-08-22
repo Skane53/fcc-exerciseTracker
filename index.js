@@ -82,7 +82,9 @@ app.get("/api/users/:_id/logs", (req, res) => {
   const to = new Date(req.query.to).getTime() || Infinity;
   const limit = req.query.limit;
 
-  ExerciseTracker.findOne({ _id: _id }).then((data) => res.send(data));
+  ExerciseTracker.findOne({ _id: _id }, { count: 1 }).then((data) =>
+    res.send(data)
+  );
 });
 
 const listener = app.listen(process.env.PORT || 3000, () => {
