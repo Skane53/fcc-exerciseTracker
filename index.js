@@ -89,7 +89,7 @@ app.get("/api/users/:_id/logs", (req, res) => {
         username: 1,
         count: 1,
         _id: 1,
-        log: 1, //{ description: 1, duration: 1, date: 1 },
+        log: { description: 1, duration: 1, date: 1 },
       },
     },
   ]).then((data) => {
