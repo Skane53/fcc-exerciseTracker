@@ -33,8 +33,8 @@ app.post("/api/users", (req, res) => {
   newExerciseTracker.save();
 
   res.json({
-    _id: newExerciseTracker["_id"],
     username: newExerciseTracker["username"],
+    _id: newExerciseTracker["_id"],
   });
 });
 
