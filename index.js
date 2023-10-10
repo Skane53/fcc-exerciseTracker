@@ -82,8 +82,8 @@ app.get("/api/users/:_id/logs", (req, res) => {
   const to = new Date(req.query.to).getTime() || Infinity;
   const limit = req.query.limit;
 
-  ExerciseTracker.find({}, { username: 1, count: 1, log: 1 }).then((data) => {
-    console.log(data);
+  ExerciseTracker.find({ _id: _id }, { "log._id": 0, __v: 0 }).then((data) => {
+    //console.log(data[0]["log"]);
     if (data.length == 0) return res.send("this _id is not in the database");
 
     // Filtering the dates between "FROM" and "ToO"
@@ -92,14 +92,15 @@ app.get("/api/users/:_id/logs", (req, res) => {
       return dateRef > from && dateRef < to;
     });
 
+    console.log(logToReturn);
     //Mapping to return objects on format {description, duration, date}
     /*  logToReturn = logToReturn.map((i) => {
-      return {
-        description: i["description"],
-        duration: i["duration"],
-        date: i["date"],
-      };
-    }); */
+        return {
+          description: i["description"],
+          duration: i["duration"],
+          date: i["date"],
+        };
+      }); */
 
     //Slicing to get the limit Number of Logs
     const newCount = limit || data[0]["count"];
