@@ -78,41 +78,29 @@ app.post("/api/users/:_id/exercises", (req, res, next) => {
 
 app.get("/api/users/:_id/logs", (req, res) => {
   const _id = req.params._id;
-  const from = new Date(req.query.from).getTime() || -Infinity;
+  const from = req.query.from && -Infinity; //new Date(req.query.from).getTime() || -Infinity;
   const to = new Date(req.query.to).getTime() || Infinity;
   const limit = req.query.limit;
 
-  ExerciseTracker.find({ _id: _id }, { "log._id": 0, __v: 0 }).then((data) => {
-    //console.log(data[0]["log"]);
+  ExerciseTracker.find(
+    { _id: _id },
+    { "log._id": 0, __v: 0 },
+    { "log.date": { $gt: from } }
+  ).then((data) => {
+    console.log(
+      new Date(from).getTime(),
+      new Date(data[0]["log"][1]["date"]).getTime()
+    );
     if (data.length == 0) return res.send("this _id is not in the database");
-
-    // Filtering the dates between "FROM" and "ToO"
-    let logToReturn = data[0]["log"].filter((i) => {
-      const dateRef = new Date(i["date"]).getTime();
-      return dateRef > from && dateRef < to;
-    });
-
+    let logToReturn = data[0]["log"];
+    logToReturn = logToReturn.filter(
+      (i) =>
+        Number(new Date(i["date"]).getTime()) >=
+          Number(new Date(from).getTime()) &&
+        Number(new Date(i["date"]).getTime()) <= Number(new Date(to).getTime())
+    );
     console.log(logToReturn);
-    //Mapping to return objects on format {description, duration, date}
-    /*  logToReturn = logToReturn.map((i) => {
-        return {
-          description: i["description"],
-          duration: i["duration"],
-          date: i["date"],
-        };
-      }); */
-
-    //Slicing to get the limit Number of Logs
-    const newCount = limit || data[0]["count"];
-    logToReturn = logToReturn.slice(0, newCount);
-
-    dataToReturn = [...data];
-    //console.log(dataToReturn);
-    dataToReturn[0]["log"] = logToReturn;
-    dataToReturn[0]["count"] = logToReturn.length;
-    delete dataToReturn[0]["__v"];
-
-    res.send(dataToReturn[0]);
+    res.send(data[0]);
   });
 });
 
