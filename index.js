@@ -96,7 +96,8 @@ app.get("/api/users/:_id/logs", (req, res) => {
         Number(new Date(i["date"]).getTime()) <= to
     );
 
-    const SLICEPARAM = Math.min(Number(limit), logToReturn.length);
+    const SLICEPARAM = Number(limit) || logToReturn.length;
+    //console.log(SLICEPARAM);
     logToReturn = logToReturn.slice(0, SLICEPARAM);
     let countToReturn = logToReturn.length;
 
