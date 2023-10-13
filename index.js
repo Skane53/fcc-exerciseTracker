@@ -86,25 +86,29 @@ app.get("/api/users/:_id/logs", (req, res) => {
     { _id: _id },
     { "log._id": 0, __v: 0 },
     { "log.date": { $gt: from } }
-  ).then((data) => {
-    //console.log(from, new Date(data[0]["log"][1]["date"]).getTime());
-    if (data.length == 0) return res.send("this _id is not in the database");
-    let logToReturn = data[0]["log"];
-    logToReturn = logToReturn.filter(
-      (i) =>
-        Number(new Date(i["date"]).getTime()) >= from &&
-        Number(new Date(i["date"]).getTime()) <= to
-    );
+  )
+    .then((data) => {
+      //console.log(from, new Date(data[0]["log"][1]["date"]).getTime());
+      if (data.length == 0) return res.send("this _id is not in the database");
+      let logToReturn = data[0]["log"];
+      logToReturn = logToReturn.filter(
+        (i) =>
+          Number(new Date(i["date"]).getTime()) >= from &&
+          Number(new Date(i["date"]).getTime()) <= to
+      );
 
-    const SLICEPARAM = Number(limit) || logToReturn.length;
-    //console.log(SLICEPARAM);
-    logToReturn = logToReturn.slice(0, SLICEPARAM);
-    let countToReturn = logToReturn.length;
+      const SLICEPARAM = Number(limit) || logToReturn.length;
+      //console.log(SLICEPARAM);
+      logToReturn = logToReturn.slice(0, SLICEPARAM);
+      let countToReturn = logToReturn.length;
 
-    data[0]["log"] = logToReturn;
-    data[0]["count"] = countToReturn;
-    res.send(data[0]);
-  });
+      data[0]["log"] = logToReturn;
+      data[0]["count"] = countToReturn;
+      res.send(data[0]);
+    })
+    .catch((err) => {
+      res.send("this _id is not in the database");
+    });
 });
 
 const listener = app.listen(process.env.PORT || 3000, () => {
