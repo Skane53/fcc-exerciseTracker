@@ -104,7 +104,8 @@ app.get("/api/users/:_id/logs", (req, res) => {
 
       data[0]["log"] = logToReturn;
       data[0]["count"] = countToReturn;
-      res.send(data[0]);
+      console.log({ ...data[0]["_doc"] });
+      res.send({ ...data[0]["_doc"] });
     })
     .catch((err) => {
       res.send("this _id is not in the database");
